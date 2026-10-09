@@ -304,6 +304,220 @@
     });
   }
 
+
+  /* ------------------------------------------------------------------
+     4. Background scene
+     - Canvas particle network (drawn with requestAnimationFrame)
+     - Cursor glow (GSAP quickTo for smooth following)
+     - Blob drift and scroll parallax (GSAP)
+     ------------------------------------------------------------------ */
+  function hexToRgb(hex) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(hex || "");
+    if (!m) return [139, 184, 255];
+    var n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  function setupParticles(reduced) {
+    var canvas = document.getElementById("bg-canvas");
+    if (!canvas || !canvas.getContext) return null;
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    var rgb = hexToRgb(data.accentColor);
+    var accentRgb = rgb[0] + "," + rgb[1] + "," + rgb[2];
+    var width = 0, height = 0, dpr = 1;
+    var particles = [];
+    var mouse = { x: -9999, y: -9999 };
+    var frameId = null;
+    var running = false;
+    var resizeTimer = null;
+    var LINK_DISTANCE = 130;
+    var MOUSE_RADIUS = 140;
+
+    function build() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = canvas.clientWidth;
+      height = canvas.clientHeight;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Density scales with screen area and is capped for performance
+      var target = Math.round(Math.min(120, Math.max(30, (width * height) / 15000)));
+      if (reduced) target = Math.min(target, 40);
+      particles = [];
+      for (var i = 0; i < target; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          r: Math.random() * 1.3 + 0.6
+        });
+      }
+    }
+
+    function step() {
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        var dx = p.x - mouse.x;
+        var dy = p.y - mouse.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MOUSE_RADIUS && dist > 0.01) {
+          var force = (1 - dist / MOUSE_RADIUS) * 0.6;
+          p.vx += (dx / dist) * force * 0.08;
+          p.vy += (dy / dist) * force * 0.08;
+        }
+        // Gentle damping keeps motion calm
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < -10) p.x = width + 10;
+        if (p.x > width + 10) p.x = -10;
+        if (p.y < -10) p.y = height + 10;
+        if (p.y > height + 10) p.y = -10;
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Connection lines
+      ctx.lineWidth = 1;
+      for (var i = 0; i < particles.length; i++) {
+        var a = particles[i];
+        for (var j = i + 1; j < particles.length; j++) {
+          var b = particles[j];
+          var dx = a.x - b.x;
+          var dy = a.y - b.y;
+          var d2 = dx * dx + dy * dy;
+          if (d2 < LINK_DISTANCE * LINK_DISTANCE) {
+            var alpha = (1 - Math.sqrt(d2) / LINK_DISTANCE) * 0.22;
+            ctx.strokeStyle = "rgba(" + accentRgb + "," + alpha.toFixed(3) + ")";
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Points
+      ctx.fillStyle = "rgba(" + accentRgb + ",0.75)";
+      for (var k = 0; k < particles.length; k++) {
+        var p = particles[k];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function frame() {
+      step();
+      draw();
+      frameId = window.requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (running || reduced) return;
+      running = true;
+      frameId = window.requestAnimationFrame(frame);
+    }
+
+    function stop() {
+      running = false;
+      if (frameId) window.cancelAnimationFrame(frameId);
+      frameId = null;
+    }
+
+    build();
+    if (reduced) {
+      draw(); // one static frame, no motion
+    } else {
+      start();
+    }
+
+    window.addEventListener("resize", function () {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(build, 150);
+    }, { passive: true });
+
+    window.addEventListener("pointermove", function (e) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    }, { passive: true });
+
+    window.addEventListener("pointerleave", function () {
+      mouse.x = -9999;
+      mouse.y = -9999;
+    });
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    return { stop: stop };
+  }
+
+  function setupCursorGlow(reduced) {
+    var glow = document.querySelector(".cursor-glow");
+    if (!glow || reduced || typeof window.gsap === "undefined") return;
+    if (window.matchMedia("(hover: none)").matches) return;
+
+    var gsap = window.gsap;
+    var xTo = gsap.quickTo(glow, "x", { duration: 0.6, ease: "power3.out" });
+    var yTo = gsap.quickTo(glow, "y", { duration: 0.6, ease: "power3.out" });
+
+    window.addEventListener("pointermove", function (e) {
+      if (e.pointerType !== "mouse") return;
+      xTo(e.clientX);
+      yTo(e.clientY);
+      glow.classList.add("is-active");
+    }, { passive: true });
+
+    document.addEventListener("pointerleave", function () {
+      glow.classList.remove("is-active");
+    });
+  }
+
+  function setupBlobs(reduced) {
+    if (reduced || typeof window.gsap === "undefined") return;
+    var gsap = window.gsap;
+    var blobs = document.querySelectorAll(".blob");
+
+    // Slow, looping drift. Transform only, so it stays on the compositor.
+    blobs.forEach(function (blob, i) {
+      gsap.to(blob, {
+        x: (i % 2 === 0 ? 1 : -1) * 90,
+        y: (i === 1 ? -70 : 70),
+        scale: 1.08,
+        duration: 16 + i * 4,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true
+      });
+    });
+
+    if (window.ScrollTrigger) {
+      // Background moves slower than content for depth
+      blobs.forEach(function (blob, i) {
+        gsap.to(blob, {
+          yPercent: -18 - i * 6,
+          ease: "none",
+          scrollTrigger: {
+            trigger: document.body,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.6
+          }
+        });
+      });
+    }
+  }
+
   /* ------------------------------------------------------------------
      Init
      ------------------------------------------------------------------ */
@@ -323,10 +537,20 @@
       console.error("Portfolio content failed to render:", err);
     }
 
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     try {
       setupAnimations();
     } catch (err) {
       console.warn("Animations skipped:", err);
+    }
+
+    try {
+      setupParticles(reduced);
+      setupCursorGlow(reduced);
+      setupBlobs(reduced);
+    } catch (err) {
+      console.warn("Background scene skipped:", err);
     }
   }
 

@@ -108,7 +108,7 @@ a:hover {
 }
 
 .section-alt {
-  background: var(--color-surface);
+  background: rgba(18, 22, 28, 0.55);
   border-block: 1px solid var(--color-border);
 }
 
@@ -388,8 +388,6 @@ a:hover {
 .hero {
   padding-top: clamp(5rem, 14vw, 9rem);
   padding-bottom: clamp(4.5rem, 10vw, 7.5rem);
-  background:
-    radial-gradient(ellipse 60% 50% at 0% 0%, rgba(139, 184, 255, 0.07), transparent 70%);
 }
 
 .eyebrow {
@@ -497,7 +495,7 @@ a:hover {
 
 .skill-group {
   padding: 1.5rem;
-  background: var(--color-background);
+  background: rgba(11, 13, 16, 0.6);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
 }
@@ -555,7 +553,7 @@ a:hover {
   flex-direction: column;
   gap: 1rem;
   padding: clamp(1.4rem, 3vw, 1.9rem);
-  background: var(--color-surface);
+  background: rgba(18, 22, 28, 0.7);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   transition:
@@ -568,8 +566,8 @@ a:hover {
 .project-card:hover,
 .project-card:focus-within {
   transform: translateY(-3px);
-  border-color: rgba(139, 184, 255, 0.45);
-  background: var(--color-surface-hover);
+  border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  background: rgba(25, 31, 39, 0.8);
 }
 
 .project-meta {
@@ -685,7 +683,7 @@ a:hover {
   display: grid;
   gap: 0.75rem;
   padding: 1.5rem;
-  background: var(--color-background);
+  background: rgba(11, 13, 16, 0.6);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
 }
@@ -783,6 +781,7 @@ a:hover {
    Footer
    ========================================================================== */
 .site-footer {
+  position: relative;
   border-top: 1px solid var(--color-border);
   padding-block: 2rem;
   font-size: 0.9rem;
@@ -816,6 +815,124 @@ a:hover {
    at runtime, so content never stays hidden if scripts fail to load.
    ========================================================================== */
 
+
+/* ==========================================================================
+   Background scene (fixed, behind all content)
+   ========================================================================== */
+body {
+  background: var(--color-background);
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.blob {
+  position: absolute;
+  width: 58vmax;
+  height: 58vmax;
+  border-radius: 50%;
+  will-change: transform;
+  opacity: 0.9;
+}
+
+.blob-a {
+  top: -22vmax;
+  left: -18vmax;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 34%, transparent) 0%, transparent 62%);
+}
+
+.blob-b {
+  top: 18vh;
+  right: -24vmax;
+  width: 64vmax;
+  height: 64vmax;
+  background: radial-gradient(circle, rgba(124, 92, 255, 0.26) 0%, transparent 62%);
+}
+
+.blob-c {
+  bottom: -28vmax;
+  left: 10vw;
+  width: 62vmax;
+  height: 62vmax;
+  background: radial-gradient(circle, rgba(15, 118, 110, 0.32) 0%, transparent 62%);
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 10%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 10%, transparent 75%);
+  opacity: 0.5;
+}
+
+.bg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 460px;
+  height: 460px;
+  margin: -230px 0 0 -230px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 16%, transparent) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 500ms var(--ease-out);
+}
+
+.cursor-glow.is-active {
+  opacity: 1;
+}
+
+@media (hover: none), (max-width: 767px) {
+  .cursor-glow {
+    display: none;
+  }
+
+  .blob {
+    width: 80vmax;
+    height: 80vmax;
+  }
+}
+
+/* Hero name: subtle accent shimmer */
+.hero-title span {
+  background: linear-gradient(100deg, var(--color-text) 30%, var(--color-accent) 50%, var(--color-text) 70%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: name-shimmer 9s linear infinite;
+}
+
+@keyframes name-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
 /* ==========================================================================
    Reduced motion
    ========================================================================== */
@@ -837,7 +954,12 @@ a:hover {
     transform: none;
   }
 
-  .scroll-progress {
+  .scroll-progress,
+  .cursor-glow {
     display: none;
+  }
+
+  .hero-title span {
+    animation: none;
   }
 }

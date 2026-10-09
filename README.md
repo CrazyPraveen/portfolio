@@ -12,9 +12,21 @@ Then open http://localhost:8000 in your browser.
 
 Opening index.html directly also works, but a local server is recommended.
 
-## Deploy
+## Deploy to GitHub Pages (free)
 
-Upload the folder to any static host (GitHub Pages, Netlify, Vercel, Cloudflare Pages). No build step is needed.
+This site is plain static files, so no build step or Jekyll is needed. The `.nojekyll` file tells GitHub Pages to serve the files as they are.
+
+1. Create a new public repository on GitHub, for example `portfolio`.
+2. Upload the **contents** of this folder to the repository root, so `index.html`, `.nojekyll`, and `.github/` sit at the top level. Do not upload the outer `portfolio/` folder itself.
+3. Go to **Settings > Pages**. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+4. Push to `main` (or open the **Actions** tab and run **Deploy to GitHub Pages** manually).
+5. When the workflow finishes, the site is live at:
+   - `https://<your-username>.github.io/<repository-name>/`
+   - If the repository is named `<your-username>.github.io`, the site is at `https://<your-username>.github.io/`.
+
+All asset paths are relative, so the site works from a sub-path.
+
+To use Jekyll instead, you would not need this workflow. GitHub Pages builds Jekyll sites automatically, but this portfolio does not use Jekyll.
 
 ## Edit content
 
@@ -33,9 +45,12 @@ Colours, spacing, and layout widths are CSS custom properties at the top of `css
     js/portfolio-data.js       Personal information and project data
     js/main.js                 Rendering, mobile navigation, GSAP animations
     assets/images/             Reserved for images (none are required)
+    .nojekyll                  Tells GitHub Pages to skip Jekyll processing
+    .github/workflows/         GitHub Actions workflow for GitHub Pages
 
 ## Notes
 
 - Content is visible without JavaScript. If GSAP fails to load, the site still works without animations.
 - Animations respect `prefers-reduced-motion`.
+- The background scene is a canvas particle network, a cursor glow, and drifting gradient blobs. It is turned down to a single static frame for reduced-motion users and pauses while the tab is hidden.
 - Remove the GSAP script tags in index.html and the `setupAnimations` call in main.js to run without animation.
