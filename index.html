@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Praveen Raj A | Full-Stack Software Engineer</title>
+  <meta name="description" content="Praveen Raj A is a full-stack software engineer working on enterprise applications, backend services, data processing, and cloud-integrated solutions.">
+  <meta name="theme-color" content="#0b0d10">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Praveen Raj A | Full-Stack Software Engineer">
+  <meta property="og:description" content="Enterprise applications, backend services, data processing, and cloud-integrated solutions.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="js/portfolio-data.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" aria-label="Praveen Raj A, back to top">Praveen Raj A</a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="nav-toggle-label">Menu</span>
+        <span class="nav-toggle-icon" aria-hidden="true"><span></span><span></span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <ul class="nav-social">
+          <li><a href="" data-link="github" aria-label="GitHub profile" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a href="" data-link="linkedin" aria-label="LinkedIn profile" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero section" id="home" aria-labelledby="hero-title">
+      <div class="container">
+        <p class="eyebrow hero-animate" data-bind="role"></p>
+        <h1 class="hero-title hero-animate" id="hero-title">
+          <span data-bind="name"></span>
+        </h1>
+        <p class="hero-intro hero-animate" data-bind="introduction"></p>
+        <p class="hero-location hero-animate" data-bind="location"></p>
+        <div class="hero-actions hero-animate">
+          <a class="btn btn-primary" href="#projects">View Projects</a>
+          <a class="btn btn-secondary" href="#contact">Contact Me</a>
+        </div>
+        <ul class="hero-links hero-animate">
+          <li><a href="" data-link="github" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a href="" data-link="linkedin" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about" aria-labelledby="about-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="section-kicker">01</p>
+          <h2 class="section-title" id="about-title">About</h2>
+        </header>
+        <div class="about-text" id="about-text" data-reveal></div>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="section section-alt" id="skills" aria-labelledby="skills-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="section-kicker">02</p>
+          <h2 class="section-title" id="skills-title">Skills</h2>
+        </header>
+        <div class="skill-grid" id="skills-grid" data-reveal-group></div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="section" id="projects" aria-labelledby="projects-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="section-kicker">03</p>
+          <h2 class="section-title" id="projects-title">Featured Projects</h2>
+        </header>
+        <div class="project-grid" id="projects-grid" data-reveal-group></div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="section section-alt" id="experience" aria-labelledby="experience-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="section-kicker">04</p>
+          <h2 class="section-title" id="experience-title">Experience</h2>
+        </header>
+        <ol class="timeline" id="experience-list" data-reveal-group></ol>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section" id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="section-kicker">05</p>
+          <h2 class="section-title" id="contact-title">Contact</h2>
+        </header>
+        <div class="contact-body" data-reveal>
+          <p class="contact-invite">
+            I am open to conversations about full-stack engineering, data processing, and AI-powered database applications. Reach out through any of the links below.
+          </p>
+          <ul class="contact-links">
+            <li><a href="" data-link="email">Email</a></li>
+            <li><a href="" data-link="github" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="" data-link="linkedin" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year"></span> <span data-bind="name"></span></p>
+      <ul class="footer-links">
+        <li><a href="" data-link="github" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        <li><a href="" data-link="linkedin" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>
